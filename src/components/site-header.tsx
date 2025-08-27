@@ -27,6 +27,7 @@ import {
   Menu,
   Settings,
   GraduationCap,
+  Eye,
 } from 'lucide-react';
 import { user } from '@/lib/data';
 
@@ -34,6 +35,7 @@ const navLinks = [
   { href: '/', label: 'Dashboard', icon: Home },
   { href: '/modules', label: 'Modules', icon: Box },
   { href: '/training', label: 'Training', icon: BookOpen },
+  { href: '/vr-showroom', label: 'VR Showroom', icon: Eye },
   { href: '/settings', label: 'Settings', icon: Settings },
 ];
 

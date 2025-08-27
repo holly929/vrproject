@@ -8,13 +8,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { Box, BookOpen, Home, Settings, GraduationCap } from 'lucide-react';
+import { Box, BookOpen, Home, Settings, GraduationCap, Eye } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navLinks = [
   { href: '/', label: 'Dashboard', icon: Home },
   { href: '/modules', label: 'Modules', icon: Box },
   { href: '/training', label: 'Training', icon: BookOpen },
+  { href: '/vr-showroom', label: 'VR Showroom', icon: Eye },
 ];
 
 const bottomLinks = [{ href: '/settings', label: 'Settings', icon: Settings }];
