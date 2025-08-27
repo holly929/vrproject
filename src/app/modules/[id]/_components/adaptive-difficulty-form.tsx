@@ -1,6 +1,6 @@
 'use client';
 
-import { useFormState } from 'react-dom';
+import { useActionState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,7 +14,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { getAdaptedDifficulty } from '../actions';
-import { useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Lightbulb, Terminal } from 'lucide-react';
@@ -31,7 +30,7 @@ export function AdaptiveDifficultyForm({
 }: {
   moduleName: string;
 }) {
-  const [state, formAction] = useFormState(getAdaptedDifficulty, initialState);
+  const [state, formAction] = useActionState(getAdaptedDifficulty, initialState);
   const { toast } = useToast();
 
   useEffect(() => {
