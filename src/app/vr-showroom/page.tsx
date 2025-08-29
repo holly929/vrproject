@@ -12,7 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Upload, Film, Play, ListVideo } from 'lucide-react';
+import { Upload, Film, Play, ListVideo, Pause } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 
@@ -26,6 +26,7 @@ export default function VRShowroomPage() {
   const [videos, setVideos] = useState<VideoFile[]>([]);
   const [currentVideo, setCurrentVideo] = useState<VideoFile | null>(null);
   const [subject, setSubject] = useState('');
+  const [isPlaying, setIsPlaying] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoPlayerRef = useRef<HTMLVideoElement>(null);
 
@@ -39,7 +40,7 @@ export default function VRShowroomPage() {
       };
       setVideos((prevVideos) => [...prevVideos, newVideo]);
       if (!currentVideo) {
-        setCurrentVideo(newVideo);
+        handlePlayVideo(newVideo);
       }
       setSubject(''); // Reset subject input
       if (fileInputRef.current) {
@@ -50,8 +51,28 @@ export default function VRShowroomPage() {
 
   const handlePlayVideo = (video: VideoFile) => {
     setCurrentVideo(video);
-    videoPlayerRef.current?.load();
+    if (videoPlayerRef.current) {
+      videoPlayerRef.current.src = video.src;
+      videoPlayerRef.current.load();
+      videoPlayerRef.current.play().then(() => {
+        setIsPlaying(true);
+      }).catch(error => {
+        console.error("Autoplay was prevented: ", error);
+        setIsPlaying(false);
+      });
+    }
   };
+
+  const togglePlayPause = () => {
+    if (videoPlayerRef.current) {
+      if (isPlaying) {
+        videoPlayerRef.current.pause();
+      } else {
+        videoPlayerRef.current.play();
+      }
+    }
+  };
+
 
   return (
     <div className="flex flex-col gap-8">
@@ -74,16 +95,33 @@ export default function VRShowroomPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="aspect-video w-full rounded-lg bg-muted flex items-center justify-center">
-                {currentVideo ? (
-                  <video
-                    ref={videoPlayerRef}
-                    src={currentVideo.src}
-                    controls
-                    autoPlay
-                    className="w-full h-full rounded-lg"
-                  />
-                ) : (
+              <div className="group relative aspect-video w-full rounded-lg bg-muted flex items-center justify-center">
+                <video
+                  ref={videoPlayerRef}
+                  src={currentVideo?.src}
+                  controls
+                  onPlay={() => setIsPlaying(true)}
+                  onPause={() => setIsPlaying(false)}
+                  onEnded={() => setIsPlaying(false)}
+                  className="w-full h-full rounded-lg"
+                />
+                {currentVideo && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={togglePlayPause}
+                      className="h-20 w-20 rounded-full text-white/80 hover:bg-white/20 hover:text-white"
+                    >
+                      {isPlaying ? (
+                        <Pause className="h-12 w-12" />
+                      ) : (
+                        <Play className="h-12 w-12" />
+                      )}
+                    </Button>
+                  </div>
+                )}
+                {!currentVideo && (
                   <div className="text-center text-muted-foreground">
                     <Upload className="mx-auto h-12 w-12" />
                     <p>No video selected</p>
@@ -150,7 +188,6 @@ export default function VRShowroomPage() {
                             size="icon"
                             variant="ghost"
                             onClick={() => handlePlayVideo(video)}
-                            disabled={currentVideo?.src === video.src}
                           >
                             <Play className="h-5 w-5" />
                           </Button>
