@@ -64,25 +64,34 @@ export default function VRShowroomPage() {
   const handlePlayVideo = (video: VideoFile) => {
     setCurrentVideo(video);
     if (videoPlayerRef.current) {
+      // Set the new source. The key attribute on the video element will handle re-mounting.
       videoPlayerRef.current.src = video.src;
+      // Autoplay can be unreliable. We'll load it and the user can press play.
+      // An effect will attempt to play it once it's ready.
       videoPlayerRef.current.load();
       videoPlayerRef.current.play().then(() => {
         setIsPlaying(true);
       }).catch(error => {
-        console.error("Autoplay was prevented: ", error);
+        console.error("Autoplay was prevented, user must press play.", error);
         setIsPlaying(false);
-      });
+      })
     }
   };
 
   const togglePlayPause = () => {
-    if (videoPlayerRef.current) {
-      if (isPlaying) {
-        videoPlayerRef.current.pause();
-      } else {
-        videoPlayerRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
+    const videoElement = videoPlayerRef.current;
+    if (!videoElement) return;
+
+    if (videoElement.paused) {
+      videoElement.play().then(() => {
+        setIsPlaying(true);
+      }).catch(error => {
+        console.error("Play failed:", error);
+        setIsPlaying(false);
+      });
+    } else {
+      videoElement.pause();
+      setIsPlaying(false);
     }
   };
 
@@ -142,6 +151,7 @@ export default function VRShowroomPage() {
           <CardContent>
             <div className="group relative aspect-video w-full rounded-lg bg-muted flex items-center justify-center">
               <video
+                key={currentVideo?.src} // Add key to force re-mount on src change
                 ref={videoPlayerRef}
                 controls
                 onPlay={() => setIsPlaying(true)}
