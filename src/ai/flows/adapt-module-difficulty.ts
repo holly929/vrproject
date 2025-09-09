@@ -16,7 +16,7 @@ const AdaptModuleDifficultyInputSchema = z.object({
   studentId: z.string().describe('The ID of the student using the module.'),
   performanceData: z
     .object({
-      score: z.number().describe('The student\'s score on the module.'),
+      score: z.number().describe("The student's score on the module."),
       timeTaken: z.number().describe('The time taken to complete the module.'),
       feedback: z.string().optional().describe('Optional feedback from the student.'),
     })
@@ -47,14 +47,14 @@ const adaptModuleDifficultyPrompt = ai.definePrompt({
   You will receive the module name, student ID, and performance data, and output the adjusted difficulty level and the reason for the adjustment.
 
   Here are the guidelines for adjusting the difficulty:
-  - If the student\'s score is above 90% and the time taken is less than half the average time, the difficulty should be increased to Hard.
-  - If the student\'s score is above 75% and the time taken is less than the average time, the difficulty should be increased to Medium.
-  - If the student\'s score is below 50%, the difficulty should be decreased to Easy.
-  - If the student\'s score is between 50% and 75%, the difficulty should remain the same.
+  - If the student's score is above 90% and the time taken is less than half the average time, the difficulty should be increased to Hard.
+  - If the student's score is above 75% and the time taken is less than the average time, the difficulty should be increased to Medium.
+  - If the student's score is below 50%, the difficulty should be decreased to Easy.
+  - If the student's score is between 50% and 75%, the difficulty should remain the same.
 
   Module Name: {{{moduleName}}}
   Student ID: {{{studentId}}}
-  Performance Data: {{{JSON.stringify(performanceData)}}}
+  Performance Data: {{{JSON.stringify performanceData}}}
 
   Based on the above information, the adjusted difficulty level should be:`,
 });
