@@ -64,29 +64,14 @@ export default function VRShowroomPage() {
   const handlePlayVideo = (video: VideoFile) => {
     setCurrentVideo(video);
     if (videoPlayerRef.current) {
-      const videoEl = videoPlayerRef.current;
-      videoEl.src = video.src;
-      videoEl.load(); // Important: load the new source
-      // Play can only start after the video is ready
-      videoEl.oncanplaythrough = () => {
-        videoEl.play().then(() => {
-          setIsPlaying(true);
-        }).catch(error => {
-          console.error("Autoplay was prevented: ", error);
-          setIsPlaying(false);
-        });
-        // clean up the event listener
-        videoEl.oncanplaythrough = null; 
-      };
-       // Handle cases where oncanplaythrough doesn't fire (e.g., cached video)
-      if (videoEl.readyState >= 3) {
-         videoEl.play().then(() => {
-          setIsPlaying(true);
-        }).catch(error => {
-          console.error("Autoplay was prevented: ", error);
-          setIsPlaying(false);
-        });
-      }
+      videoPlayerRef.current.src = video.src;
+      videoPlayerRef.current.load();
+      videoPlayerRef.current.play().then(() => {
+        setIsPlaying(true);
+      }).catch(error => {
+        console.error("Autoplay was prevented: ", error);
+        setIsPlaying(false);
+      });
     }
   };
 
@@ -97,6 +82,7 @@ export default function VRShowroomPage() {
       } else {
         videoPlayerRef.current.play();
       }
+      setIsPlaying(!isPlaying);
     }
   };
 
