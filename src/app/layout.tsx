@@ -32,7 +32,7 @@ export default function RootLayout({
       <body className="font-body antialiased">
         <div className="relative flex min-h-screen w-full">
           <SiteSidebar />
-          <div className="flex flex-1 flex-col pl-14">
+          <div className="flex flex-1 flex-col pl-0 sm:pl-14">
             <SiteHeader />
             <main className="flex-1 p-4 sm:p-6 md:p-8">{children}</main>
           </div>
