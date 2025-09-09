@@ -76,7 +76,10 @@ const generateVideoFlow = ai.defineFlow(
       throw new Error('GEMINI_API_KEY environment variable is not set.');
     }
     
-    const videoDownloadUrl = `${video.media.url}&key=${apiKey}`;
+    // The key might not be automatically appended in all environments.
+    const videoDownloadUrl = video.media.url.includes('&key=') 
+      ? video.media.url
+      : `${video.media.url}&key=${apiKey}`;
 
     const response = await fetch(videoDownloadUrl);
     if (!response.ok) {
