@@ -12,9 +12,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Upload, Film, Play, ListVideo, Pause } from 'lucide-react';
+import { Upload, Film, Play, ListVideo, Pause, Bot, Loader2 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { generateVideoFromPrompt } from './actions';
+import { useToast } from '@/hooks/use-toast';
+import { Textarea } from '@/components/ui/textarea';
 
 interface VideoFile {
   name: string;
@@ -27,8 +30,12 @@ export default function VRShowroomPage() {
   const [currentVideo, setCurrentVideo] = useState<VideoFile | null>(null);
   const [subject, setSubject] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [prompt, setPrompt] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoPlayerRef = useRef<HTMLVideoElement>(null);
+  const { toast } = useToast();
+
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -73,13 +80,54 @@ export default function VRShowroomPage() {
     }
   };
 
+  const handleGenerateVideo = async () => {
+    if (!prompt) {
+      toast({
+        title: 'Error',
+        description: 'Please enter a prompt to generate a video.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    setIsGenerating(true);
+    toast({
+      title: 'Video Generation Started',
+      description: 'Your video is being created. This may take a minute...',
+    });
+
+    const result = await generateVideoFromPrompt(prompt);
+
+    setIsGenerating(false);
+
+    if (result.error || !result.videoDataUri) {
+      toast({
+        title: 'Video Generation Failed',
+        description: result.error || 'An unknown error occurred.',
+        variant: 'destructive',
+      });
+    } else {
+       toast({
+        title: 'Video Ready!',
+        description: 'Your generated video has been added to the playlist.',
+      });
+      const newVideo: VideoFile = {
+        name: `${prompt.substring(0, 20)}...`,
+        subject: 'AI Generated',
+        src: result.videoDataUri,
+      };
+      setVideos((prev) => [newVideo, ...prev]);
+      handlePlayVideo(newVideo);
+      setPrompt('');
+    }
+  };
+
 
   return (
     <div className="flex flex-col gap-8">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">VR Showroom</h1>
         <p className="text-muted-foreground">
-          Upload and experience your own VR videos, organized by subject.
+          Upload and experience your own VR videos, or generate new ones with AI.
         </p>
       </div>
 
@@ -130,6 +178,41 @@ export default function VRShowroomPage() {
               </div>
             </CardContent>
           </Card>
+           <Card className="mt-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Bot /> AI Video Generation
+              </CardTitle>
+              <CardDescription>
+                Describe a scene and let our AI create a video for you.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="prompt">Video Prompt</Label>
+                  <Textarea
+                    id="prompt"
+                    placeholder="e.g., A majestic dragon soaring over a mystical forest at dawn."
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    disabled={isGenerating}
+                    className="min-h-[100px]"
+                  />
+                </div>
+                <Button onClick={handleGenerateVideo} disabled={isGenerating}>
+                  {isGenerating ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    'Generate Video'
+                  )}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         <div className="space-y-8">
@@ -163,7 +246,7 @@ export default function VRShowroomPage() {
             </CardContent>
             <CardFooter>
                <p className="text-xs text-muted-foreground">
-                Your videos are loaded in the browser and not saved to a server.
+                Your videos are not saved to a server.
               </p>
             </CardFooter>
           </Card>
@@ -171,7 +254,7 @@ export default function VRShowroomPage() {
           <Card>
             <CardHeader>
               <CardTitle className='flex items-center gap-2'><ListVideo /> Playlist</CardTitle>
-              <CardDescription>Your uploaded videos.</CardDescription>
+              <CardDescription>Your uploaded and generated videos.</CardDescription>
             </CardHeader>
             <CardContent>
               <ScrollArea className="h-[200px] w-full">
@@ -199,7 +282,7 @@ export default function VRShowroomPage() {
                 ) : (
                   <div className="flex flex-col items-center justify-center text-center text-muted-foreground h-full">
                     <Film className="h-10 w-10 mb-2" />
-                    <p>No videos uploaded yet.</p>
+                    <p>No videos yet.</p>
                   </div>
                 )}
               </ScrollArea>
