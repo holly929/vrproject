@@ -71,7 +71,7 @@ export function SiteHeader() {
           </nav>
         </SheetContent>
       </Sheet>
-      <div className="relative ml-auto flex-1 md:grow-0">
+      <div className="relative ml-auto hidden flex-1 md:grow-0">
         {/* Can be a search bar */}
       </div>
       <DropdownMenu>
@@ -79,7 +79,7 @@ export function SiteHeader() {
           <Button
             variant="outline"
             size="icon"
-            className="overflow-hidden rounded-full"
+            className="ml-auto overflow-hidden rounded-full"
           >
             <Avatar>
               <AvatarImage

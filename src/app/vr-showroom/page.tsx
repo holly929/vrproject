@@ -123,17 +123,9 @@ export default function VRShowroomPage() {
 
 
   return (
-    <div className="flex flex-col gap-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">VR Showroom</h1>
-        <p className="text-muted-foreground">
-          Upload and experience your own VR videos, or generate new ones with AI.
-        </p>
-      </div>
-
-      <div className="grid gap-8 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <Card>
+    <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
+        <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
+           <Card>
             <CardHeader>
               <CardTitle>VR Player</CardTitle>
               <CardDescription>
@@ -178,7 +170,7 @@ export default function VRShowroomPage() {
               </div>
             </CardContent>
           </Card>
-           <Card className="mt-8">
+           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Bot /> AI Video Generation
@@ -215,7 +207,7 @@ export default function VRShowroomPage() {
           </Card>
         </div>
 
-        <div className="space-y-8">
+        <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-1">
           <Card>
             <CardHeader>
               <CardTitle>Upload Video</CardTitle>
@@ -289,7 +281,6 @@ export default function VRShowroomPage() {
             </CardContent>
           </Card>
         </div>
-      </div>
     </div>
   );
 }
