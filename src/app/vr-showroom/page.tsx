@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, ChangeEvent } from 'react';
+import { useState, useRef, ChangeEvent, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -53,7 +53,7 @@ export default function VRShowroomPage() {
         src: URL.createObjectURL(file),
       };
       setVideos((prevVideos) => [newVideo, ...prevVideos]);
-      handlePlayVideo(newVideo);
+      setCurrentVideo(newVideo); // Set as current video to load it
       setSubject(''); // Reset subject input
       if (fileInputRef.current) {
         fileInputRef.current.value = ''; // Reset file input
@@ -63,35 +63,27 @@ export default function VRShowroomPage() {
 
   const handlePlayVideo = (video: VideoFile) => {
     setCurrentVideo(video);
-    if (videoPlayerRef.current) {
-      // Set the new source. The key attribute on the video element will handle re-mounting.
-      videoPlayerRef.current.src = video.src;
-      // Autoplay can be unreliable. We'll load it and the user can press play.
-      // An effect will attempt to play it once it's ready.
-      videoPlayerRef.current.load();
-      videoPlayerRef.current.play().then(() => {
-        setIsPlaying(true);
-      }).catch(error => {
-        console.error("Autoplay was prevented, user must press play.", error);
-        setIsPlaying(false);
-      })
-    }
   };
+  
+  useEffect(() => {
+    const videoElement = videoPlayerRef.current;
+    if (videoElement && currentVideo) {
+      videoElement.load();
+      videoElement.play().catch(error => {
+        console.error("Autoplay was prevented. User interaction required.", error);
+        setIsPlaying(false);
+      });
+    }
+  }, [currentVideo]);
 
   const togglePlayPause = () => {
     const videoElement = videoPlayerRef.current;
     if (!videoElement) return;
 
     if (videoElement.paused) {
-      videoElement.play().then(() => {
-        setIsPlaying(true);
-      }).catch(error => {
-        console.error("Play failed:", error);
-        setIsPlaying(false);
-      });
+      videoElement.play().catch(error => console.error("Play failed:", error));
     } else {
       videoElement.pause();
-      setIsPlaying(false);
     }
   };
 
@@ -105,6 +97,7 @@ export default function VRShowroomPage() {
       return;
     }
     setIsGenerating(true);
+    setCurrentVideo(null); // Clear video player
     toast({
       title: 'Video Generation Started',
       description: 'Your video is being created. This may take a minute...',
@@ -126,12 +119,12 @@ export default function VRShowroomPage() {
         description: 'Your generated video has been added to the playlist.',
       });
       const newVideo: VideoFile = {
-        name: `${prompt.substring(0, 20)}...`,
+        name: `${prompt.substring(0, 30)}...`,
         subject: 'AI Generated',
         src: result.videoDataUri,
       };
       setVideos((prev) => [newVideo, ...prev]);
-      handlePlayVideo(newVideo);
+      setCurrentVideo(newVideo);
       setPrompt('');
     }
   };
@@ -145,19 +138,22 @@ export default function VRShowroomPage() {
             <CardDescription>
               {currentVideo
                 ? `Playing: ${currentVideo.name}`
-                : 'Your selected video will be displayed here.'}
+                : isGenerating
+                ? 'Generating AI video...'
+                : 'Select a video from the playlist or upload a new one.'}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="group relative aspect-video w-full rounded-lg bg-muted flex items-center justify-center">
               <video
-                key={currentVideo?.src} // Add key to force re-mount on src change
+                key={currentVideo?.src} 
                 ref={videoPlayerRef}
                 controls
                 onPlay={() => setIsPlaying(true)}
                 onPause={() => setIsPlaying(false)}
                 onEnded={() => setIsPlaying(false)}
                 className="w-full h-full rounded-lg"
+                src={currentVideo?.src}
               />
               {currentVideo && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -175,10 +171,16 @@ export default function VRShowroomPage() {
                   </Button>
                 </div>
               )}
-              {!currentVideo && (
+              {!currentVideo && !isGenerating && (
                 <div className="text-center text-muted-foreground">
                   <Upload className="mx-auto h-12 w-12" />
                   <p>No video selected</p>
+                </div>
+              )}
+               {!currentVideo && isGenerating && (
+                <div className="text-center text-muted-foreground">
+                  <Loader2 className="mx-auto h-12 w-12 animate-spin text-primary" />
+                  <p className="mt-2">AI is creating your video...</p>
                 </div>
               )}
             </div>
