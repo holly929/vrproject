@@ -53,7 +53,7 @@ export default function VRShowroomPage() {
         src: URL.createObjectURL(file),
       };
       setVideos((prevVideos) => [newVideo, ...prevVideos]);
-      setCurrentVideo(newVideo); // Set as current video to load it
+      handlePlayVideo(newVideo); // Play the newly uploaded video
       setSubject(''); // Reset subject input
       if (fileInputRef.current) {
         fileInputRef.current.value = ''; // Reset file input
@@ -69,10 +69,13 @@ export default function VRShowroomPage() {
     const videoElement = videoPlayerRef.current;
     if (videoElement && currentVideo) {
       videoElement.load();
-      videoElement.play().catch(error => {
-        console.error("Autoplay was prevented. User interaction required.", error);
-        setIsPlaying(false);
-      });
+      const playPromise = videoElement.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.error("Autoplay was prevented:", error);
+          setIsPlaying(false);
+        });
+      }
     }
   }, [currentVideo]);
 
