@@ -26,6 +26,7 @@ import { Separator } from '@/components/ui/separator';
 import { generateVideoFromPrompt } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
+import { useActionState } from 'react';
 
 interface VideoFile {
   name: string;
@@ -33,16 +34,25 @@ interface VideoFile {
   src: string;
 }
 
+const initialState = {
+  videoDataUri: null,
+  error: null,
+};
+
 export default function VRShowroomPage() {
   const [videos, setVideos] = useState<VideoFile[]>([]);
   const [currentVideo, setCurrentVideo] = useState<VideoFile | null>(null);
   const [subject, setSubject] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [prompt, setPrompt] = useState('');
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoPlayerRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
+
+  const [state, formAction, isGenerating] = useActionState(
+    generateVideoFromPrompt,
+    initialState
+  );
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -53,7 +63,7 @@ export default function VRShowroomPage() {
         src: URL.createObjectURL(file),
       };
       setVideos((prevVideos) => [newVideo, ...prevVideos]);
-      handlePlayVideo(newVideo); // Play the newly uploaded video
+      setCurrentVideo(newVideo); // Select the newly uploaded video
       setSubject(''); // Reset subject input
       if (fileInputRef.current) {
         fileInputRef.current.value = ''; // Reset file input
@@ -66,16 +76,15 @@ export default function VRShowroomPage() {
   };
   
   useEffect(() => {
+    // This effect ensures the video player tries to play whenever the current video changes.
     const videoElement = videoPlayerRef.current;
     if (videoElement && currentVideo) {
-      videoElement.load();
-      const playPromise = videoElement.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
+      videoElement.load(); // Load the new source
+      videoElement.play().catch(error => {
+          // Autoplay is often blocked, which is fine. The user can click play.
           console.error("Autoplay was prevented:", error);
           setIsPlaying(false);
-        });
-      }
+      });
     }
   }, [currentVideo]);
 
@@ -90,47 +99,38 @@ export default function VRShowroomPage() {
     }
   };
 
-  const handleGenerateVideo = async () => {
-    if (!prompt) {
-      toast({
-        title: 'Error',
-        description: 'Please enter a prompt to generate a video.',
-        variant: 'destructive',
-      });
-      return;
+  useEffect(() => {
+    if (isGenerating) {
+        setCurrentVideo(null); // Clear video player while generating
+        toast({
+          title: 'Video Generation Started',
+          description: 'Your video is being created. This may take a minute...',
+        });
     }
-    setIsGenerating(true);
-    setCurrentVideo(null); // Clear video player
-    toast({
-      title: 'Video Generation Started',
-      description: 'Your video is being created. This may take a minute...',
-    });
+  }, [isGenerating, toast]);
 
-    const result = await generateVideoFromPrompt(prompt);
-
-    setIsGenerating(false);
-
-    if (result.error || !result.videoDataUri) {
+  useEffect(() => {
+    if (state.error) {
       toast({
         title: 'Video Generation Failed',
-        description: result.error || 'An unknown error occurred.',
+        description: state.error,
         variant: 'destructive',
       });
-    } else {
-      toast({
+    }
+    if (state.videoDataUri) {
+       toast({
         title: 'Video Ready!',
         description: 'Your generated video has been added to the playlist.',
       });
       const newVideo: VideoFile = {
-        name: `${prompt.substring(0, 30)}...`,
+        name: `AI Generated Video...`,
         subject: 'AI Generated',
-        src: result.videoDataUri,
+        src: state.videoDataUri,
       };
       setVideos((prev) => [newVideo, ...prev]);
       setCurrentVideo(newVideo);
-      setPrompt('');
     }
-  };
+  }, [state, toast]);
 
   return (
     <div className="mx-auto grid max-w-6xl flex-1 auto-rows-max gap-4 lg:grid-cols-3 lg:gap-8">
@@ -152,10 +152,10 @@ export default function VRShowroomPage() {
                 key={currentVideo?.src} 
                 ref={videoPlayerRef}
                 controls
+                className="w-full h-full rounded-lg"
                 onPlay={() => setIsPlaying(true)}
                 onPause={() => setIsPlaying(false)}
                 onEnded={() => setIsPlaying(false)}
-                className="w-full h-full rounded-lg"
               >
                   {currentVideo && <source src={currentVideo.src} />}
               </video>
@@ -200,29 +200,30 @@ export default function VRShowroomPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="prompt">Video Prompt</Label>
-                <Textarea
-                  id="prompt"
-                  placeholder="e.g., A majestic dragon soaring over a mystical forest at dawn."
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  disabled={isGenerating}
-                  className="min-h-[100px]"
-                />
+            <form action={formAction}>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="prompt">Video Prompt</Label>
+                  <Textarea
+                    id="prompt"
+                    name="prompt"
+                    placeholder="e.g., A majestic dragon soaring over a mystical forest at dawn."
+                    disabled={isGenerating}
+                    className="min-h-[100px]"
+                  />
+                </div>
+                <Button type="submit" disabled={isGenerating}>
+                  {isGenerating ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    'Generate Video'
+                  )}
+                </Button>
               </div>
-              <Button onClick={handleGenerateVideo} disabled={isGenerating}>
-                {isGenerating ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Generating...
-                  </>
-                ) : (
-                  'Generate Video'
-                )}
-              </Button>
-            </div>
+            </form>
           </CardContent>
         </Card>
       </div>

@@ -7,7 +7,10 @@ type State = {
   error?: string | null;
 };
 
-export async function generateVideoFromPrompt(prompt: string): Promise<State> {
+export async function generateVideoFromPrompt(
+  prevState: State,
+  prompt: string
+): Promise<State> {
   if (!prompt) {
     return { error: 'Prompt cannot be empty.' };
   }
