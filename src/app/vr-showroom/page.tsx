@@ -156,8 +156,9 @@ export default function VRShowroomPage() {
                 onPause={() => setIsPlaying(false)}
                 onEnded={() => setIsPlaying(false)}
                 className="w-full h-full rounded-lg"
-                src={currentVideo?.src}
-              />
+              >
+                  {currentVideo && <source src={currentVideo.src} />}
+              </video>
               {currentVideo && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <Button

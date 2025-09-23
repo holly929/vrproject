@@ -1,0 +1,22 @@
+diff --git a/node_modules/next/dist/server/lib/start-server.js b/node_modules/next/dist/server/lib/start-server.js
+index 45140f80a42323a1293a5099e82e3f6ad1d24c8b..940026e6327c52ba68ab65330e774a3f3316f73e 100644
+--- a/node_modules/next/dist/server/lib/start-server.js
++++ b/node_modules/next/dist/server/lib/start-server.js
+@@ -194,7 +194,7 @@
+         if (isTurbo) {
+             const { startTurboDevServer } = await Promise.resolve(require("next/dist/server/dev/turbopack-server"));
+             const devServer = await startTurboDevServer({
+-                hostname,
++                hostname: "0.0.0.0",
+                 port,
+                 dir: settings.dir,
+                 dev: true,
+@@ -218,7 +218,7 @@
+                     port,
+                     dir,
+                     // whatever is passed to the script is considered the hostname
+-                    hostname,
++                    hostname: "0.0.0.0",
+                     isNextDevCommand,
+                     selfSignedCertificate,
+                     isNodeDebugging
