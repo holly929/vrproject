@@ -5,6 +5,7 @@ export interface Module {
   longDescription: string;
   image: string;
   imageHint: string;
+  videoUrl?: string;
   difficulty: 'Easy' | 'Medium' | 'Hard';
   learningObjectives: string[];
   content: {

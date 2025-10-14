@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Check, PlayCircle, Bot } from 'lucide-react';
+import { Check, Bot } from 'lucide-react';
 import { AdaptiveDifficultyForm } from './_components/adaptive-difficulty-form';
 
 export default function ModuleDetailPage({
@@ -49,18 +49,19 @@ export default function ModuleDetailPage({
             </div>
           </CardHeader>
           <CardContent>
-            <div className="relative aspect-video w-full overflow-hidden rounded-lg">
-              <Image
-                src={module.image.replace('600/400', '1280/720')}
-                alt={`VR Experience for ${module.title}`}
-                fill
-                className="object-cover"
-                data-ai-hint={module.imageHint}
-              />
-              <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                <PlayCircle className="h-20 w-20 text-white/80 transition-all hover:text-white hover:scale-110" />
-              </div>
-            </div>
+            {module.videoUrl ? (
+               <div className="relative aspect-video w-full overflow-hidden rounded-lg">
+                <video
+                    src={module.videoUrl}
+                    controls
+                    className="w-full h-full object-cover"
+                />
+               </div>
+            ) : (
+                <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-muted flex items-center justify-center">
+                    <p className="text-muted-foreground">No video available</p>
+                </div>
+            )}
           </CardContent>
         </Card>
         <Card className="mt-8">

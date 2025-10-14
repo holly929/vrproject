@@ -15,6 +15,7 @@ export const modules: Module[] = [
     longDescription: "A deeply immersive journey into the Cape Coast Castle, a pivotal site in the trans-Atlantic slave trade. This module allows students to virtually walk through the dungeons, courtyards, and the infamous 'Door of No Return,' providing a powerful, context-rich historical lesson.",
     image: 'https://picsum.photos/seed/picsum1/600/400',
     imageHint: 'castle history',
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
     difficulty: 'Medium',
     learningObjectives: [
       'Understand the historical context of the slave trade in Ghana.',
@@ -34,6 +35,7 @@ export const modules: Module[] = [
     longDescription: "Journey through the lush rainforest of Kakum National Park. This module features a virtual canopy walk, interactive identification of native flora and fauna, and lessons on the importance of biodiversity and conservation in Ghana.",
     image: 'https://picsum.photos/seed/picsum2/600/400',
     imageHint: 'nature forest',
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
     difficulty: 'Easy',
     learningObjectives: [
       'Identify 5 native plant species.',
@@ -52,6 +54,7 @@ export const modules: Module[] = [
     longDescription: "Step into the vibrant world of Ashanti culture and learn the intricate art of Kente weaving. This hands-on simulation, co-created with artisans from Kumasi, guides students through the patterns and symbolism of this iconic Ghanaian textile.",
     image: 'https://picsum.photos/seed/picsum3/600/400',
     imageHint: 'fabric textile',
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4',
     difficulty: 'Medium',
     learningObjectives: [
       'Recognize different Kente patterns and their meanings.',
@@ -70,6 +73,7 @@ export const modules: Module[] = [
     longDescription: "Explore the rich philosophical tradition of the Akan people through Adinkra symbols. This module allows students to interact with 3D models of the symbols, learn their meanings, and see how they are used in art and architecture.",
     image: 'https://picsum.photos/seed/picsum4/600/400',
     imageHint: 'symbol art',
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
     difficulty: 'Easy',
     learningObjectives: [
       'Identify 10 common Adinkra symbols and their meanings.',
@@ -89,6 +93,7 @@ export const modules: Module[] = [
     longDescription: "Embark on an interstellar journey from the sun to the outer reaches of the solar system. This module provides a scientifically accurate simulation of the planets, moons, and other celestial bodies, making abstract astronomical concepts tangible.",
     image: 'https://picsum.photos/seed/picsum5/600/400',
     imageHint: 'space galaxy',
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnAnAdventure.mp4',
     difficulty: 'Hard',
     learningObjectives: [
       'Name all planets in order.',
@@ -108,6 +113,7 @@ export const modules: Module[] = [
     longDescription: "Shrink down to a microscopic size and explore the inner workings of a human cell. Navigate through the cytoplasm, visit the nucleus, and witness mitochondria at work in this interactive biology lesson.",
     image: 'https://picsum.photos/seed/picsum6/600/400',
     imageHint: 'science biology',
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4',
     difficulty: 'Hard',
     learningObjectives: [
       'Identify the main organelles of a human cell.',
