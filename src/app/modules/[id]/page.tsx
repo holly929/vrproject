@@ -50,17 +50,20 @@ export default function ModuleDetailPage({
           </CardHeader>
           <CardContent>
             {module.videoUrl ? (
-               <div className="relative aspect-video w-full overflow-hidden rounded-lg">
+              <div className="relative aspect-video w-full overflow-hidden rounded-lg">
                 <video
-                    src={module.videoUrl}
-                    controls
-                    className="w-full h-full object-cover"
-                />
-               </div>
+                  key={module.videoUrl} // Key ensures the video element re-renders on source change
+                  src={module.videoUrl}
+                  controls
+                  className="h-full w-full object-cover"
+                >
+                  Your browser does not support the video tag.
+                </video>
+              </div>
             ) : (
-                <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-muted flex items-center justify-center">
-                    <p className="text-muted-foreground">No video available</p>
-                </div>
+              <div className="relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-lg bg-muted">
+                <p className="text-muted-foreground">No video available</p>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -70,7 +73,8 @@ export default function ModuleDetailPage({
               <Bot /> Adaptive Learning
             </CardTitle>
             <CardDescription>
-              Submit your performance to let our AI adapt the module difficulty for you.
+              Submit your performance to let our AI adapt the module difficulty
+              for you.
             </CardDescription>
           </CardHeader>
           <CardContent>
